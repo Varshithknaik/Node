@@ -1,30 +1,25 @@
-process.env.UV_THREADPOOL_SIZE = 2;
-
+const express = require("express");
 const crypto = require("crypto");
+const app = express();
+const Worker = require("worker_threads").Worker;
 
-const clustor = require("cluster");
+app.get("/", (req, res) => {
+  // it use's the node worker thread anyways
+  // crypto.pbkdf2("a", "b", 100000, 512, "sha512", () => {
+  //   res.send("Hi There");
+  // });
 
-// Is the file being executed in master mode?
-if (clustor.isMaster) {
-  // Cause index.js to be executed *again* but in child mode
-  clustor.fork();
-  // clustor.fork();
-  // clustor.fork();
-  // clustor.fork();
-} else {
-  // Im a child, Im going to act lke a server and do nothing else
-  const express = require("express");
-  const app = express();
+  const worker = new Worker("./worker.js");
 
-  app.get("/", (req, res) => {
-    crypto.pbkdf2('a', 'b', 100000, 512, 'sha512', () => {
-        res.send("Hi There");
-    });
+  worker.on("message", function (message) {
+    console.log(message);
+    res.send(`Hi There, ${message} iterations!`);
   });
+  worker.postMessage("start!");
+});
 
-  app.get("/fast", (req, res) => {
-    res.send("This was fast");
-  });
+app.get("/fast", (req, res) => {
+  res.send("This was fast");
+});
 
-  app.listen(3000);
-}
+app.listen(3000);
