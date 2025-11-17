@@ -1,1 +1,4 @@
 /node_modules
+**/dev.js
+
+/AdvancedNodeStarter/config/dev.js
