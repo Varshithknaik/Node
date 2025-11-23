@@ -14,9 +14,27 @@ module.exports = app => {
   });
 
   app.get('/api/blogs', requireLogin, async (req, res) => {
-    const blogs = await Blog.find({ _user: req.user.id });
+  //   const redis = require('redis');
+  //   const redisUrl = 'redis://127.0.0.1:6379';
+  //   const client = redis.createClient(redisUrl);
+  //   const util = require('util');
+  //   client.get = util.promisify(client.get);
 
-    res.send(blogs);
+
+  //   const cachedBlogs = await client.get(req.user.id);
+
+  //   if (cachedBlogs) {
+  //     console.log('SERVING FROM CACHE');
+  //     return res.send(JSON.parse(cachedBlogs));
+  //   }
+  //  console.log('SERVING FROM MANGOO');
+  //   const blogs = await Blog.find({ _user: req.user.id });
+  //   client.set(req.user.id, JSON.stringify(blogs));
+
+  //   res.send(blogs);
+
+  const blogs = await Blog.find({ _user: req.user.id });
+  res.send(blogs);
   });
 
   app.post('/api/blogs', requireLogin, async (req, res) => {
